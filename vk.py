@@ -23,7 +23,7 @@ params = {
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 bot = start_main_bot('non-async', '587974580:AAFGcUwspPdr2pU44nJqLD-ps9FxSwUJ6mg')
 start_message = start_message(stamp1)
-idMainChannel = -1001186759363
+idMainChannel = -1001354415399
 idMe = 396978030
 used_links = []
 
