@@ -33,7 +33,7 @@ def vk_parser():
     sleep(20)
     while True:
         try:
-            sleep(10)
+            sleep(60)
             response = requests.get('https://api.vk.com/method/wall.get', params=params).json()
             for item in reversed(response['response']['items']):
                 post = 'https://vk.com/' + params['domain'] + '?w=wall' + str(item['owner_id']) + '_' + str(item['id'])
