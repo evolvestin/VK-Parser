@@ -1,46 +1,45 @@
+import os
 import re
 import vk_api
 import gspread
 import _thread
+import objects
 import requests
 from copy import copy
 from time import sleep
 from telebot import types
 from telegraph import upload
-from datetime import datetime
 from fake_headers import Headers
-from additional.objects import thread_exec as executive
-from oauth2client.service_account import ServiceAccountCredentials
-from additional.objects import start_main_bot, start_message, printer
-
-stamp1 = int(datetime.now().timestamp())
+from objects import thread_exec as executive
+stamp1 = objects.time_now()
 params = {
     'access_token': 'ca876787ca876787ca876787aacaf5d7becca87ca876787946bb00f4f54b680d843283b',
     'v': '5.110',
     'domain': 'fan_arthas',
-    'count': 100
-}
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-bot = start_main_bot('non-async', '587974580:AAFGcUwspPdr2pU44nJqLD-ps9FxSwUJ6mg')
-start_message = start_message(stamp1)
-idMainChannel = -1001354415399
-idMe = 396978030
+    'count': 100}
 used_links = []
+idMe = 396978030
+idMainChannel = -1001354415399
+if os.environ.get('api') is None:
+    idMainChannel = -1001186759363
+token = '587974580:AAFGcUwspPdr2pU44nJqLD-ps9FxSwUJ6mg'
+start_message = objects.start_message(stamp1, token)
+bot = objects.start_main_bot('non-async', token)
 
 
 def vk_parser():
     global used_links
-    sleep(20)
+    while not used_links:
+        sleep(1)
     while True:
         try:
-            sleep(60)
+            sleep(10)
             response = requests.get('https://api.vk.com/method/wall.get', params=params).json()
             for item in reversed(response['response']['items']):
                 post = 'https://vk.com/' + params['domain'] + '?w=wall' + str(item['owner_id']) + '_' + str(item['id'])
                 if post not in used_links:
-                    sleep(10)
                     used_links.append(post)
-                    printer('получена ' + post)
+                    objects.printer('получена ' + post)
                     if item.get('copy_history') is None:
                         group = []
                         text = None
@@ -74,13 +73,13 @@ def vk_parser():
                                             video = vk.video.get(owner_id=owner_id, videos=link)['items'][0]
                                             if video.get('platform') in [None, 'YouTube']:
                                                 if video.get('platform') == 'YouTube':
-                                                    link = re.sub('\?.*', '', video['player'])
+                                                    link = re.sub(r'\?.*', '', video['player'])
                                                     link = re.sub('www.youtube.com/embed', 'youtu.be', link)
                                                     group.append({'type': 'YouTube', 'content': link})
                                                 else:
                                                     response = requests.get(video['player'], headers=headers)
                                                     search = list(
-                                                        reversed(re.findall('"cache\d+":"(.*?)"', response.text)))
+                                                        reversed(re.findall(r'"cache\d+":"(.*?)"', response.text)))
                                                     if search:
                                                         file_name = str(number) + '.mp4'
                                                         request = requests.get(re.sub(r'\\', '', search[0]))
@@ -128,7 +127,7 @@ def vk_parser():
                                     caption = None
                                     try:
                                         uploaded = upload.upload_file(open(file_name, 'rb'))
-                                        text = '<a href="https://telegra.ph' + uploaded[0] + '">​​ </a>' + text[:4090]
+                                        text = '<a href="https://telegra.ph' + uploaded[0] + '"></a>' + text[:4090]
                                     except IndexError and Exception:
                                         caption = text[:1024]
                                 else:
@@ -149,6 +148,7 @@ def vk_parser():
                                 group.clear()
                         if len(group) == 0:
                             bot.send_message(idMainChannel, text[:4096], parse_mode='HTML')
+                    sleep(10)
         except IndexError and Exception:
             executive()
 
@@ -156,25 +156,19 @@ def vk_parser():
 def google():
     global used_links
     try:
-        cred1 = ServiceAccountCredentials.from_json_keyfile_name('worker5-storage.json', scope)
-        client1 = gspread.authorize(cred1)
-        used_links = client1.open('vk_fan').worksheet('main').col_values(1)
-    except IndexError and Exception:
-        used_links = []
-        executive()
-    while True:
-        try:
-            cred1 = ServiceAccountCredentials.from_json_keyfile_name('worker5-storage.json', scope)
-            client1 = gspread.authorize(cred1)
-            worksheet = client1.open('vk_fan').worksheet('main')
+        client = gspread.service_account('worker5-storage.json')
+        used_links = client.open('vk_fan').worksheet('main').col_values(1)
+        while True:
+            client = gspread.service_account('worker5-storage.json')
+            worksheet = client.open('vk_fan').worksheet('main')
             values = worksheet.col_values(1)
             for value in copy(used_links):
                 if value not in values:
                     worksheet.insert_row([value], 1)
                     sleep(2)
             sleep(5)
-        except IndexError and Exception:
-            executive()
+    except IndexError and Exception:
+        executive()
 
 
 @bot.message_handler(func=lambda message: message.text)
