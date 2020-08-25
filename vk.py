@@ -23,7 +23,7 @@ idMainChannel = -1001354415399
 if os.environ.get('api') is None:
     idMainChannel = -1001186759363
 token = '587974580:AAFGcUwspPdr2pU44nJqLD-ps9FxSwUJ6mg'
-start_message = objects.start_message(stamp1, token)
+start_message = objects.start_message(token, stamp1)
 bot = objects.start_main_bot('non-async', token)
 
 
