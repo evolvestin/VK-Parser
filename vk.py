@@ -19,12 +19,12 @@ params = {
     'count': 100}
 used_links = []
 idMe = 396978030
-idMainChannel = -1001354415399
-if os.environ.get('api') is None:
-    idMainChannel = -1001186759363
+idMainChannel = -1001186759363
 token = '587974580:AAFGcUwspPdr2pU44nJqLD-ps9FxSwUJ6mg'
-start_message = objects.start_message(token, stamp1)
 bot = objects.start_main_bot('non-async', token)
+if os.environ.get('api') is None:
+    idMainChannel = -1001354415399
+    start_message = objects.start_message(token, stamp1)
 
 
 def vk_parser():
@@ -33,8 +33,9 @@ def vk_parser():
         sleep(1)
     while True:
         try:
-            sleep(10)
+            sleep(20)
             response = requests.get('https://api.vk.com/method/wall.get', params=params).json()
+            print(response)
             for item in reversed(response['response']['items']):
                 post = 'https://vk.com/' + params['domain'] + '?w=wall' + str(item['owner_id']) + '_' + str(item['id'])
                 if post not in used_links:
