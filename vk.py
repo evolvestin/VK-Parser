@@ -13,18 +13,19 @@ from fake_headers import Headers
 from objects import thread_exec as executive
 stamp1 = objects.time_now()
 params = {
-    'access_token': 'ca876787ca876787ca876787aacaf5d7becca87ca876787946bb00f4f54b680d843283b',
+    'access_token': os.environ['VK_TOKEN'],
     'v': '5.110',
-    'domain': 'fan_arthas',
+    'domain': os.environ['address'],
     'count': 100}
 used_links = []
 idMe = 396978030
 idMainChannel = -1001186759363
-token = '587974580:AAFGcUwspPdr2pU44nJqLD-ps9FxSwUJ6mg'
-bot = objects.start_main_bot('non-async', token)
+objects.environmental_files()
+
+bot = objects.start_main_bot('non-async', os.environ['TOKEN'])
 if os.environ.get('api'):
     idMainChannel = -1001354415399
-    start_message = objects.start_message(token, stamp1)
+    start_message = objects.start_message(os.environ['TOKEN'], stamp1)
 
 
 def telegram_publish(item):
