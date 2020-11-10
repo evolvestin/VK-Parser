@@ -55,7 +55,7 @@ def telegram_publish(item):
                         video = media['video']
                         owner_id = str(video['owner_id'])
                         link = owner_id + '_' + str(video['id']) + '_' + video['access_key']
-                        vk_session = vk_api.VkApi('+375292001283', 'vk_Evolve_new)_12600')
+                        vk_session = vk_api.VkApi(os.environ['phone'], os.environ['vk_pass'])
                         vk = vk_session.get_api()
                         vk_session.auth()
                         video = vk.video.get(owner_id=owner_id, videos=link)['items'][0]
