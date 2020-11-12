@@ -2,5 +2,5 @@ gspread==3.6.0
 vk-api==11.8.0
 telegraph==1.4.0
 requests>=2.18.4
-e-objects>=1.0.13
+e-objects>=1.2.0
 fake-headers==1.0.2

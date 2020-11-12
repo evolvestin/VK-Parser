@@ -10,7 +10,6 @@ from time import sleep
 from telebot import types
 from telegraph import upload
 from fake_headers import Headers
-from objects import thread_exec as executive
 stamp1 = objects.time_now()
 params = {
     'access_token': os.environ['VK_TOKEN'],
@@ -19,13 +18,14 @@ params = {
     'count': 100}
 used_links = []
 idMe = 396978030
-idMainChannel = -1001186759363
 objects.environmental_files()
-
-bot = objects.start_main_bot('non-async', os.environ['TOKEN'])
+idMainChannel = -1001186759363
+Auth = objects.AuthCentre(os.environ['TOKEN'])
+bot = Auth.start_main_bot('non-async')
+executive = Auth.thread_exec
 if os.environ.get('api'):
     idMainChannel = -1001354415399
-    start_message = objects.start_message(os.environ['TOKEN'], stamp1)
+    start_message = Auth.start_message(stamp1)
 
 
 def telegram_publish(item):
@@ -55,7 +55,7 @@ def telegram_publish(item):
                         video = media['video']
                         owner_id = str(video['owner_id'])
                         link = owner_id + '_' + str(video['id']) + '_' + video['access_key']
-                        vk_session = vk_api.VkApi(os.environ['phone'], os.environ['vk_pass'])
+                        vk_session = vk_api.VkApi(os.environ['VK_PHONE'], os.environ['VK_PASS'])
                         vk = vk_session.get_api()
                         vk_session.auth()
                         video = vk.video.get(owner_id=owner_id, videos=link)['items'][0]
