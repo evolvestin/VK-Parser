@@ -3,11 +3,11 @@ import re
 import vk_api
 import gspread
 import _thread
-import objects
 import requests
 from copy import copy
 from time import sleep
 from telebot import types
+import functions as objects
 from telegraph import upload
 from fake_headers import Headers
 stamp1 = objects.time_now()
