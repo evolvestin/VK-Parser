@@ -202,7 +202,11 @@ def telegram_polling():
         telegram_polling()
 
 
-if __name__ == '__main__':
+def start():
     _thread.start_new_thread(vk_parser, ())
     _thread.start_new_thread(google, ())
     telegram_polling()
+
+
+if __name__ == '__main__':
+    start()
